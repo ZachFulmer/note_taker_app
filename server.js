@@ -16,7 +16,18 @@ app.use(express.static('public'));
 // API Routes
 app.get('/api/notes', (req, res) =>
 {
-    res.json(notes);
+    fs.readFile('./db/db.json', (err, data) => 
+    {
+        if(err)
+        {
+            res.status(404).send(`Failed to read notes - Error: ${err}`);
+        }
+        else
+        {
+            const results = JSON.parse(data);
+            res.json(results.notes);
+        }
+    });
 });
 
 app.post('/api/notes', (req, res) =>
@@ -38,7 +49,7 @@ app.post('/api/notes', (req, res) =>
                 notesObj.notes.push(req.body);
 
                 fs.writeFileSync('./db/db.json', JSON.stringify(notesObj));
-                res.json(notesObj);
+                res.json(req.body);
             }
         });
     }
