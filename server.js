@@ -58,6 +58,25 @@ app.post('/api/notes', (req, res) =>
         res.status(404).send("Invalid Entry when submitting new note.");
     }
 });
+
+app.delete('/api/notes/:id', (req, res) =>
+{
+    fs.readFile('./db/db.json', (err, data) => 
+    {
+        if(err)
+        {
+            res.status(404).send(`Failed to read notes - Error: ${err}`);
+        }
+        else
+        {
+            const notesObj = JSON.parse(data);
+            const notes = notesObj.notes.filter(note => note.id != req.params.id);
+
+            fs.writeFileSync('./db/db.json', JSON.stringify({notes}));
+            res.json({notes});
+        }
+    });
+});
 // End of API Routes
 
 // HTML Routes
